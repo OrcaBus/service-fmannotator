@@ -1,24 +1,46 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { DeploymentStackPipeline } from '@orcabus/platform-cdk-constructs/deployment-stack-pipeline';
-import { getStackProps } from '../stage/config';
+import { Pipeline } from 'aws-cdk-lib/aws-codepipeline';
+import { FMAnnotatorStack } from '../stage/fmannotator-stack';
+import { getFmAnnotatorProps } from '../stage/config';
 
 export class StatelessStack extends cdk.Stack {
+  readonly pipeline: Pipeline;
+
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    new DeploymentStackPipeline(this, 'DeploymentPipeline', {
-      githubBranch: 'main',
-      githubRepo: /** TODO: Replace with string. Example: */ 'service-microservice-manager',
-      stack: /** TODO: Replace with Stack (e.g. TheStatelessStack) */ undefined as unknown,
-      stackName: /** TODO: Replace with string. Example: */ 'StatelessMicroserviceManager',
+    const deployment = new DeploymentStackPipeline(this, 'DeploymentPipeline', {
+      githubBranch: 'init',
+      githubRepo: 'service-fmannotator',
+      stack: FMAnnotatorStack,
+      stackName: 'FMAnnotatorStack',
       stackConfig: {
-        beta: getStackProps('BETA'),
-        gamma: getStackProps('GAMMA'),
-        prod: getStackProps('PROD'),
+        beta: {
+          ...getFmAnnotatorProps(),
+        },
+        gamma: {
+          ...getFmAnnotatorProps(),
+        },
+        prod: {
+          ...getFmAnnotatorProps(),
+        },
       },
-      pipelineName: /** TODO: Replace with string. Example: */ 'OrcaBus-StatelessMicroservice',
+      pipelineName: 'OrcaBus-StatelessFMAnnotator',
       cdkSynthCmd: ['pnpm install --frozen-lockfile --ignore-scripts', 'pnpm cdk-stateless synth'],
+      synthBuildSpec: {
+        phases: {
+          install: {
+            'runtime-versions': {
+              nodejs: '22.x',
+              golang: '1.24',
+            },
+          },
+        },
+      },
     });
+
+    this.pipeline = deployment.pipeline;
   }
 }

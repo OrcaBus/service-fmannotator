@@ -1,19 +1,12 @@
-import { getDefaultApiGatewayConfiguration } from '@orcabus/platform-cdk-constructs/api-gateway';
-import { StageName } from '@orcabus/platform-cdk-constructs/utils';
+import { FMAnnotatorProps } from './fmannotator-stack';
+import { eventBusName, eventDlqNameFMAnnotator, jwtSecretName, vpcProps } from './constants';
 
-export const getStackProps = (stage: StageName) => {
-  const serviceDomainNameDict: Record<StageName, string> = {
-    BETA: 'service.dev.umccr.org',
-    GAMMA: 'service.stg.umccr.org',
-    PROD: 'service.prod.umccr.org',
-  };
-
+export const getFmAnnotatorProps = (): FMAnnotatorProps => {
   return {
-    apiGatewayConstructProps: {
-      ...getDefaultApiGatewayConfiguration(stage),
-      apiName: 'ServiceAPI',
-      customDomainNamePrefix: 'service-orcabus',
-    },
-    serviceDomainName: serviceDomainNameDict[stage],
+    vpcProps,
+    eventBusName,
+    fileManagerSecretName: jwtSecretName,
+    eventDLQName: eventDlqNameFMAnnotator,
+    fileManagerDomainPrefix: 'file',
   };
 };
