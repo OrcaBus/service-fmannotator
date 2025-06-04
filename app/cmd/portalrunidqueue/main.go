@@ -1,9 +1,9 @@
 package main
 
 import (
+	fmannotator "github.com/OrcaBus/service-fmannotator/app"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-secretsmanager-caching-go/secretcache"
-	"github.com/umccr/orcabus/lib/workload/stateless/stacks/fmannotator"
 )
 
 var (

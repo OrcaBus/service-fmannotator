@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/umccr/orcabus/lib/workload/stateless/stacks/fmannotator/schema/orcabus_workflowmanager/workflowrunstatechange"
+	"github.com/OrcaBus/service-fmannotator/app/schema/orcabus_workflowmanager/workflowrunstatechange"
 	"io"
 	"log/slog"
 	"net/http"

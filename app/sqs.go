@@ -3,9 +3,9 @@ package fmannotator
 import (
 	"context"
 	"encoding/json"
+	"github.com/OrcaBus/service-fmannotator/app/schema/orcabus_workflowmanager/workflowrunstatechange"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
-	"github.com/umccr/orcabus/lib/workload/stateless/stacks/fmannotator/schema/orcabus_workflowmanager/workflowrunstatechange"
 )
 
 // Sqs encapsulates the AWS SQS actions.

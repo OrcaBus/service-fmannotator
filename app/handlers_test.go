@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/OrcaBus/service-fmannotator/app/internal/test"
 	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/require"
-	"github.com/umccr/orcabus/lib/workload/stateless/stacks/fmannotator/internal/test"
 	"testing"
 	"time"
 )

@@ -3,8 +3,8 @@ package fmannotator
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/OrcaBus/service-fmannotator/app/internal/test"
 	"github.com/stretchr/testify/require"
-	"github.com/umccr/orcabus/lib/workload/stateless/stacks/fmannotator/internal/test"
 	"net/url"
 	"testing"
 )
