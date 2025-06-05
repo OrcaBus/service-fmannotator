@@ -12,7 +12,7 @@ if (!deployMode) {
 }
 
 if (deployMode === 'stateless') {
-  new StatelessStack(app, 'OrcaBusStatelessFileManagerStack', {
+  new StatelessStack(app, 'OrcaBusStatelessFMAnnotatorStack', {
     env: TOOLCHAIN_ENVIRONMENT,
   });
 } else {
