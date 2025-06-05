@@ -94,9 +94,11 @@ export class FMAnnotatorStack extends Stack {
       FMANNOTATOR_QUEUE_WAIT_TIME_SECS: '60',
       GO_LOG: 'debug',
     };
-    const entry = path.join(__dirname, '..', 'cmd', 'portalrunid');
+
+    const appDir = path.join(__dirname, '..', '..', 'app');
     const fn = new GoFunction(this, 'PortalRunId', {
-      entry,
+      entry: path.join(appDir, 'cmd', 'portalrunid'),
+      moduleDir: appDir,
       environment: env,
       memorySize: 128,
       timeout: Duration.seconds(28),
