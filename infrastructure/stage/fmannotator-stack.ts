@@ -98,7 +98,6 @@ export class FMAnnotatorStack extends Stack {
     const appDir = path.join(__dirname, '..', '..', 'app');
     const fn = new GoFunction(this, 'PortalRunId', {
       entry: path.join(appDir, 'cmd', 'portalrunid'),
-      moduleDir: appDir,
       environment: env,
       memorySize: 128,
       timeout: Duration.seconds(28),
@@ -134,9 +133,8 @@ export class FMAnnotatorStack extends Stack {
     queueRole.addManagedPolicy(
       ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaSQSQueueExecutionRole')
     );
-    const entryQueue = path.join(__dirname, '..', 'cmd', 'portalrunidqueue');
     new GoFunction(this, 'PortalRunIdQueue', {
-      entry: entryQueue,
+      entry: path.join(appDir, 'cmd', 'portalrunidqueue'),
       environment: env,
       memorySize: 128,
       timeout: Duration.seconds(28),
