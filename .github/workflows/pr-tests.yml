@@ -59,10 +59,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          make install
+          make install-all
       - name: Lint and code formatting
         run: |
-          make check
+          make check-all
 
   test-iac:
     runs-on: ubuntu-24.04-arm
