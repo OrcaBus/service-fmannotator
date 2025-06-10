@@ -27,7 +27,7 @@ To update the [go.mod][go-mod] and download any new go modules:
 make clean
 ```
 
-## Project layout
+## Go project layout
 
 This service has the following structure:
 

@@ -14,6 +14,8 @@ lint:
 golangci-lint:
 	@golangci-lint run
 check: lint golangci-lint
+fix: lint
+	@golangci-lint run --fix
 
 ## Clean
 clean:
