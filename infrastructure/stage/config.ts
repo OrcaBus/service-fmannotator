@@ -1,19 +1,16 @@
-import { getDefaultApiGatewayConfiguration } from '@orcabus/platform-cdk-constructs/api-gateway';
-import { StageName } from '@orcabus/platform-cdk-constructs/utils';
+import { FMAnnotatorProps } from './fmannotator-stack';
+import { EVENT_DLQ_NAME } from './constants';
+import { VPC_LOOKUP_PROPS } from '@orcabus/platform-cdk-constructs/shared-config/networking';
+import { DEFAULT_ORCABUS_TOKEN_SECRET_ID } from '@orcabus/platform-cdk-constructs/lambda/config';
+import { EVENT_BUS_NAME } from '@orcabus/platform-cdk-constructs/shared-config/event-bridge';
+import { fileManagerDomainPrefix } from '@orcabus/platform-cdk-constructs/shared-config/file-manager';
 
-export const getStackProps = (stage: StageName) => {
-  const serviceDomainNameDict: Record<StageName, string> = {
-    BETA: 'service.dev.umccr.org',
-    GAMMA: 'service.stg.umccr.org',
-    PROD: 'service.prod.umccr.org',
-  };
-
+export const getFmAnnotatorProps = (): FMAnnotatorProps => {
   return {
-    apiGatewayConstructProps: {
-      ...getDefaultApiGatewayConfiguration(stage),
-      apiName: 'ServiceAPI',
-      customDomainNamePrefix: 'service-orcabus',
-    },
-    serviceDomainName: serviceDomainNameDict[stage],
+    vpcProps: VPC_LOOKUP_PROPS,
+    eventBusName: EVENT_BUS_NAME,
+    fileManagerSecretName: DEFAULT_ORCABUS_TOKEN_SECRET_ID,
+    eventDLQName: EVENT_DLQ_NAME,
+    fileManagerDomainPrefix: fileManagerDomainPrefix,
   };
 };

@@ -1,0 +1,5 @@
+auditConfig:
+  ignoreCves:
+    # https://github.com/juliangruber/brace-expansion/pull/65
+    # Todo remove when fixed, low risk as it's a test dependency.
+    - CVE-2025-5889

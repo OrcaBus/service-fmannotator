@@ -1,106 +1,53 @@
-Template Service
-================================================================================
-
-- [Template Service](#template-service)
-  - [Service Description](#service-description)
-    - [Name \& responsibility](#name--responsibility)
-    - [Description](#description)
-    - [API Endpoints](#api-endpoints)
-    - [Consumed Events](#consumed-events)
-    - [Published Events](#published-events)
-    - [(Internal) Data states \& persistence model](#internal-data-states--persistence-model)
-    - [Major Business Rules](#major-business-rules)
-    - [Permissions \& Access Control](#permissions--access-control)
-    - [Change Management](#change-management)
-      - [Versioning strategy](#versioning-strategy)
-      - [Release management](#release-management)
-  - [Infrastructure \& Deployment](#infrastructure--deployment)
-    - [Stateful](#stateful)
-    - [Stateless](#stateless)
-    - [CDK Commands](#cdk-commands)
-    - [Stacks](#stacks)
-  - [Development](#development)
-    - [Project Structure](#project-structure)
-    - [Setup](#setup)
-      - [Requirements](#requirements)
-      - [Install Dependencies](#install-dependencies)
-      - [First Steps](#first-steps)
-    - [Conventions](#conventions)
-    - [Linting \& Formatting](#linting--formatting)
-    - [Testing](#testing)
-  - [Glossary \& References](#glossary--references)
-
-
-Service Description
+FMAnnotator
 --------------------------------------------------------------------------------
 
-### Name & responsibility
+The FMAnnotator is a service that responds to `WorkflowRunStateChange` events and adds attributes to [filemanager] records.
+It is responsible for tagging [filemanager] records with attributes based on events received from the main
+OrcaBus event bus. Currently, the only use-case is to tag filemanager records with a `portalRunId` found inside
+the `WorkflowStateChange` event.
 
-### Description
-
-### API Endpoints
-
-This service provides a RESTful API following OpenAPI conventions. 
-The Swagger documentation of the production endpoint is available here: 
-
+To do this, it reads the events and then tags all filemanager records that contain the `portalRunId` in the path, that
+is, it tags records with `*/<portalRunId>/*` inside the `key` column. This service does not have any API endpoints.
 
 ### Consumed Events
 
-| Name / DetailType | Source         | Schema Link       | Description         |
-|-------------------|----------------|-------------------|---------------------|
-| `SomeServiceStateChange` | `orcabus.someservice` | <schema link> | Announces service state changes |
+| Name / DetailType        | Source                                        | Schema Link                                                                                                                         | Description                                                    |
+|--------------------------|-----------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------|
+| `WorkflowRunStateChange` | [`orcabus.workflowmanager`][workflow-manager] | https://github.com/OrcaBus/service-workflow-manager/blob/main/docs/events/WorkflowRunStateChange/WorkflowRunStateChange.schema.json | Announces service state changes and contains the `portalRunId` |
 
-### Published Events
-
-| Name / DetailType | Source         | Schema Link       | Description         |
-|-------------------|----------------|-------------------|---------------------|
-| `TemplateStateChange` | `orcabus.templatemanager` | <schema link> | Announces Template data state changes |
-
-
-### (Internal) Data states & persistence model
-
-### Major Business Rules
+[workflow-manager]: https://github.com/OrcaBus/service-workflow-manager
 
 ### Permissions & Access Control
 
+The FMAnnotator needs permissions to push to the dead-letter SQS queue and read the OrcaBus `orcabus/token-service-jwt` API secret.
+
 ### Change Management
 
-#### Versioning strategy
+This service employs a fully automated CI/CD pipeline that automatically builds and releases all changes to the `main`
+code branch.
 
-E.g. Manual tagging of git commits following Semantic Versioning (semver) guidelines.
+There are no automated changelogs or releases, however semantic versioning is followed for any manual release, and
+[conventional commits][conventional-commits] are used for future automation.
 
-#### Release management
+[conventional-commits]: https://www.conventionalcommits.org/en/v1.0.0/
 
-The service employs a fully automated CI/CD pipeline that automatically builds and releases all changes to the `main` code branch.
-
-
-Infrastructure & Deployment 
+Infrastructure & Deployment
 --------------------------------------------------------------------------------
 
-Short description with diagrams where appropriate.
-Deployment settings / configuration (e.g. CodePipeline(s) / automated builds).
+The FMAnnotator is a primarily a stateless service that consumes events on the event bus, however it does have a stateful
+dead-letter queue that it uses to push events that could not be processed.
 
-Infrastructure and deployment are managed via CDK. This template provides two types of CDK entry points: `cdk-stateless` and `cdk-stateful`.
+It uses a [`GoFunction`][go-function] as the Lambda function that responds to events on the OrcaBus main event bus. It
+also deploys an event rule to the event bus to filter the correct events that the service should respond to.
 
-
-### Stateful
-
-- Queues
-- Buckets
-- Database
-- ...
-
-### Stateless
-- Lambdas
-- StepFunctions
-
+[go-function]: https://docs.aws.amazon.com/cdk/api/v2/docs/@aws-cdk_aws-lambda-go-alpha.GoFunction.html
 
 ### CDK Commands
 
 You can access CDK commands using the `pnpm` wrapper script.
 
-- **`cdk-stateless`**: Used to deploy stacks containing stateless resources (e.g., AWS Lambda), which can be easily redeployed without side effects.
-- **`cdk-stateful`**: Used to deploy stacks containing stateful resources (e.g., AWS DynamoDB, AWS RDS), where redeployment may not be ideal due to potential side effects.
+- **`cdk-stateless`**: Used to deploy the FMAnnotator `GoFunction` and event rules for the event bus.
+- **`cdk-stateful`**: Used to deploy the FMAnnotator dead-letter SQS queue for failed events.
 
 The type of stack to deploy is determined by the context set in the `./bin/deploy.ts` file. This ensures the correct stack is executed based on the provided context.
 
@@ -109,58 +56,62 @@ For example:
 ```sh
 # Deploy a stateless stack
 pnpm cdk-stateless <command>
+```
 
+```sh
 # Deploy a stateful stack
 pnpm cdk-stateful <command>
 ```
 
 ### Stacks
 
-This CDK project manages multiple stacks. The root stack (the only one that does not include `DeploymentPipeline` in its stack ID) is deployed in the toolchain account and sets up a CodePipeline for cross-environment deployments to `beta`, `gamma`, and `prod`.
+This CDK project manages multiple stacks. The root stack (the only one that does not include `DeploymentPipeline` in its stack ID)
+is deployed in the toolchain account and sets up a CodePipeline for cross-environment deployments to `beta`, `gamma`, and `prod`.
 
-To list all available stacks, run:
+To list all available stacks, run the `cdk-stateless` or `cdk-stateful` script:
 
 ```sh
 pnpm cdk-stateless ls
 ```
 
-Example output:
+Output:
 
 ```sh
-OrcaBusStatelessServiceStack
-OrcaBusStatelessServiceStack/DeploymentPipeline/OrcaBusBeta/DeployStack (OrcaBusBeta-DeployStack)
-OrcaBusStatelessServiceStack/DeploymentPipeline/OrcaBusGamma/DeployStack (OrcaBusGamma-DeployStack)
-OrcaBusStatelessServiceStack/DeploymentPipeline/OrcaBusProd/DeployStack (OrcaBusProd-DeployStack)
+OrcaBusStatelessFMAnnotatorStack
+OrcaBusStatelessFMAnnotatorStack/DeploymentPipeline/OrcaBusBeta/FMAnnotatorStack (OrcaBusBeta-FMAnnotatorStack)
+OrcaBusStatelessFMAnnotatorStack/DeploymentPipeline/OrcaBusGamma/FMAnnotatorStack (OrcaBusGamma-FMAnnotatorStack)
+OrcaBusStatelessFMAnnotatorStack/DeploymentPipeline/OrcaBusProd/FMAnnotatorStack (OrcaBusProd-FMAnnotatorStack)
 ```
-
 
 Development
 --------------------------------------------------------------------------------
 
 ### Project Structure
 
-The root of the project is an AWS CDK project where the main application logic lives inside the `./app` folder.
+The root of the project is an AWS CDK project and the main application logic lives inside the `./app` folder.
 
-The project is organized into the following key directories:
+The project is organized into the following directories:
 
-- **`./app`**: Contains the main application logic. You can open the code editor directly in this folder, and the application should run independently.
+- **`./app`**: Contains the main application logic written in Go.
 
-- **`./bin/deploy.ts`**: Serves as the entry point of the application. It initializes two root stacks: `stateless` and `stateful`. You can remove one of these if your service does not require it.
+- **`./bin/deploy.ts`**: Serves as the entry point of the application. It initializes two stacks: `stateless` and `stateful`.
 
 - **`./infrastructure`**: Contains the infrastructure code for the project:
-  - **`./infrastructure/toolchain`**: Includes stacks for the stateless and stateful resources deployed in the toolchain account. These stacks primarily set up the CodePipeline for cross-environment deployments.
-  - **`./infrastructure/stage`**: Defines the stage stacks for different environments:
-    - **`./infrastructure/stage/config.ts`**: Contains environment-specific configuration files (e.g., `beta`, `gamma`, `prod`).
-    - **`./infrastructure/stage/stack.ts`**: The CDK stack entry point for provisioning resources required by the application in `./app`.
+    - **`./infrastructure/toolchain`**: Includes stacks for the stateless and stateful resources deployed in the toolchain account. These stacks primarily set up the CodePipeline for cross-environment deployments.
+    - **`./infrastructure/stage`**: Defines the stage stacks for different environments:
+        - **`./infrastructure/stage/config.ts`**: Contains environment-specific configuration files (e.g., `beta`, `gamma`, `prod`).
+        - **`./infrastructure/stage/fmannotator-stack.ts`**: The CDK stack entry point for provisioning resources required by the application in `./app`.
 
-- **`.github/workflows/pr-tests.yml`**: Configures GitHub Actions to run tests for `make check` (linting and code style), tests defined in `./test`, and `make test` for the `./app` directory. Modify this file as needed to ensure the tests are properly configured for your environment.
+- **`.github/workflows/pr-tests.yml`**: Configures GitHub Actions to run tests for `make check-all` (linting and code style), tests defined in `./test`, and `make test` for the `./app` directory.
 
-- **`./test`**: Contains tests for CDK code compliance against `cdk-nag`. You should modify these test files to match the resources defined in the `./infrastructure` folder.
-
+- **`./test`**: Contains tests for CDK code compliance against `cdk-nag`.
 
 ### Setup
 
 #### Requirements
+
+This project requires Go for development. It's recommended for it to be installed to make use of local bundling,
+however to just deploy the stack, all that should be required is pnpm and nodejs:
 
 ```sh
 node --version
@@ -171,35 +122,29 @@ npm install --global corepack@latest
 
 # Enable Corepack to use pnpm
 corepack enable pnpm
-
 ```
 
 #### Install Dependencies
 
-To install all required dependencies, run:
+To install pnpm dependencies, run:
 
 ```sh
 make install
 ```
 
-#### First Steps
-
-Before using this template, search for all instances of `TODO:` comments in the codebase and update them as appropriate for your service. This includes replacing placeholder values (such as stack names).
-
-
 ### Conventions
+
+A top-level [`Makefile`][makefile] contains commands to install, build, lint and test code. See the [`Makefile`][makefile-app] in the [`app`][app] directory
+for commands to run lints against the application code. There are links to the app `Makefile` in the top-level `Makefile`.
 
 ### Linting & Formatting
 
-Automated checks are enforces via pre-commit hooks, ensuring only checked code is committed. For details consult the `.pre-commit-config.yaml` file.
+Automated checks are enforced via pre-commit hooks, ensuring only checked code is committed. For details consult the `.pre-commit-config.yaml` file.
 
-Manual, on-demand checking is also available via `make` targets (see below). For details consult the `Makefile` in the root of the project.
-
-
-To run linting and formatting checks on the root project, use:
+To run linting and formatting checks on the whole project (this requires [Go][go] and [golangci-lint][golangci-lint]), use:
 
 ```sh
-make check
+make check-all
 ```
 
 To automatically fix issues with ESLint and Prettier, run:
@@ -210,22 +155,20 @@ make fix
 
 ### Testing
 
-
-Unit tests are available for most of the business logic. Test code is hosted alongside business in `/tests/` directories.  
+Tests for the application are contained in the `app` directory. Infrastructure and cdk-nag tests can be run by using:
 
 ```sh
 make test
 ```
 
-Glossary & References
---------------------------------------------------------------------------------
-
-For general terms and expressions used across OrcaBus services, please see the platform [documentation](https://github.com/OrcaBus/wiki/blob/main/orcabus-platform/README.md#glossary--references).
-
-Service specific terms:
-
-| Term      | Description                                      |
-|-----------|--------------------------------------------------|
-| Foo | ... |
-| Bar | ... |
-
+[makefile]: Makefile
+[makefile-app]: app/Makefile
+[readme]: app/README.md
+[app]: app
+[bin]: bin
+[infrastructure]: infrastructure
+[test]: test
+[pnpm]: https://pnpm.io/
+[filemanager]: https://github.com/OrcaBus/service-filemanager
+[golang]: https://go.dev/doc/install
+[golangci-lint]: https://golangci-lint.run/welcome/install/#local-installation
