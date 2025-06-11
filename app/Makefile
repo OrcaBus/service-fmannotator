@@ -1,8 +1,9 @@
 ## Default target
 default: help
 
-install: build
-all: build
+install:
+	@go mod tidy
+all: install
 
 ## Build related commands
 build:
@@ -19,7 +20,7 @@ fix: lint
 
 ## Clean
 clean:
-	@go mod tidy
+	@rm -rf build
 
 ## Help text
 help:
