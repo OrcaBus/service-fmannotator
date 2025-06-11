@@ -33,10 +33,6 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: stable
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v8
-        with:
-          version: v2.1
 
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
@@ -60,6 +56,12 @@ jobs:
       - name: Install dependencies
         run: |
           make install-all
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.1
+          working-directory: ./app
       - name: Lint and code formatting
         run: |
           make check-all
@@ -76,11 +78,11 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: stable
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22.x'
           cache: 'pnpm'
-      - uses: pnpm/action-setup@v4
 
       - run: corepack enable
       - run: pnpm install --frozen-lockfile --ignore-scripts
@@ -100,6 +102,7 @@ jobs:
           go-version: stable
 
       - name: Install dependencies
+        working-directory: ./app
         run: |
           make install
 
