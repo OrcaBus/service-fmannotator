@@ -12,7 +12,7 @@ export class StatefulStack extends cdk.Stack {
     super(scope, id, props);
 
     const deployment = new DeploymentStackPipeline(this, 'DeploymentPipeline', {
-      githubBranch: 'main',
+      githubBranch: 'feat/dlq',
       githubRepo: 'service-fmannotator',
       stack: FMAnnotatorStatefulStack,
       stackName: 'FMAnnotatorStatefulStack',
