@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/OrcaBus/service-fmannotator/app/schema/orcabus_workflowmanager/workflowrunstatechange"
 	"io"
 	"log/slog"
 	"net/http"
@@ -23,7 +22,7 @@ type JsonPatch struct {
 type PatchList []JsonPatch
 
 // MarshallPortalRunId MarshallPatch Convert an event into a JSON patch using the portalRunId.
-func MarshallPortalRunId(event *workflowrunstatechange.Event) ([]byte, error) {
+func MarshallPortalRunId(event *Event) ([]byte, error) {
 	return json.Marshal(PatchList{JsonPatch{
 		"add",
 		"/portalRunId",

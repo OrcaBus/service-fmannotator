@@ -83,7 +83,10 @@ func TestHandler(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("%v", tc.event), func(t *testing.T) {
-			event := test.CreateEvent(t, tc.event)
+			b := test.CreateEvent(t, tc.event)
+			var event Event
+			err := json.Unmarshal(b, &event)
+			require.NoError(t, err)
 
 			config, err := LoadConfig()
 			require.NoError(t, err)

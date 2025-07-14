@@ -10,7 +10,11 @@ import (
 )
 
 func TestMarshallPortalRunId(t *testing.T) {
-	event := test.CreateEvent(t, "event_succeeded.json")
+	b := test.CreateEvent(t, "event_succeeded.json")
+	var event Event
+	err := json.Unmarshal(b, &event)
+	require.NoError(t, err)
+
 	body, err := MarshallPortalRunId(&event)
 	require.NoError(t, err)
 
