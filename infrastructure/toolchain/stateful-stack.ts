@@ -13,6 +13,7 @@ export class StatefulStack extends cdk.Stack {
 
     const deployment = new DeploymentStackPipeline(this, 'DeploymentPipeline', {
       githubBranch: 'feat/dlq',
+      enableSlackNotification: false,
       githubRepo: 'service-fmannotator',
       stack: FMAnnotatorStatefulStack,
       stackName: 'FMAnnotatorStatefulStack',
@@ -21,7 +22,7 @@ export class StatefulStack extends cdk.Stack {
         gamma: getFmAnnotatorStatefulProps(),
         prod: getFmAnnotatorStatefulProps(),
       },
-      pipelineName: 'OrcaBus-StatefulFileManager',
+      pipelineName: 'OrcaBus-StatefulFMAnnotator',
       cdkSynthCmd: ['pnpm install --frozen-lockfile --ignore-scripts', 'pnpm cdk-stateful synth'],
     });
 
