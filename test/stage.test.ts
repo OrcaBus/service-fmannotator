@@ -1,9 +1,10 @@
 import { App, Aspects, Stack } from 'aws-cdk-lib';
 import { Annotations, Match } from 'aws-cdk-lib/assertions';
 import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
-import { FMAnnotatorStack } from '../infrastructure/stage/fmannotator-stack';
-import { getFmAnnotatorProps } from '../infrastructure/stage/config';
+import { FMAnnotatorStack } from '../infrastructure/stage/fmannotator-stateless-stack';
+import { getFmAnnotatorProps, getFmAnnotatorStatefulProps } from '../infrastructure/stage/config';
 import { synthesisMessageToString } from '@orcabus/platform-cdk-constructs/utils';
+import { FMAnnotatorStatefulStack } from '../infrastructure/stage/fmannotator-stateful-stack';
 
 /**
  * Apply nag suppression for the stateless stack
@@ -20,7 +21,7 @@ function applyStatelessNagSuppressions(stack: Stack) {
 /**
  * Run the CDK nag checks.
  */
-function cdkNagStack(stack: Stack, applySuppressions: (stack: Stack) => void) {
+export function cdkNagStack(stack: Stack, applySuppressions: (stack: Stack) => void) {
   Aspects.of(stack).add(new AwsSolutionsChecks());
   applySuppressions(stack);
 
@@ -51,4 +52,20 @@ describe('cdk-nag-stateless-toolchain-stack', () => {
   });
 
   cdkNagStack(fmAnnotatorStack, applyStatelessNagSuppressions);
+});
+
+describe('cdk-nag-stateless-toolchain-stack', () => {
+  const app = new App();
+
+  const fmAnnotatorStack = new FMAnnotatorStatefulStack(app, 'FMAnnotatorStatefulStack', {
+    ...getFmAnnotatorStatefulProps(),
+    env: {
+      account: '123456789',
+      region: 'ap-southeast-2',
+    },
+  });
+
+  cdkNagStack(fmAnnotatorStack, () => {
+    return;
+  });
 });

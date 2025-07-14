@@ -1,1 +1,1 @@
-export const EVENT_DLQ_NAME = 'orcabus-event-dlq-fmannotator';
+export const FMANNOTATOR_QUEUE = 'orcabus-fmannotator-queue';

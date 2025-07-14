@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { DeploymentStackPipeline } from '@orcabus/platform-cdk-constructs/deployment-stack-pipeline';
 import { Pipeline } from 'aws-cdk-lib/aws-codepipeline';
-import { FMAnnotatorStack } from '../stage/fmannotator-stack';
+import { FMAnnotatorStack } from '../stage/fmannotator-stateless-stack';
 import { getFmAnnotatorProps } from '../stage/config';
 
 export class StatelessStack extends cdk.Stack {
