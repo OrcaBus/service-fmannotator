@@ -4,7 +4,6 @@ import { EventBus, Rule } from 'aws-cdk-lib/aws-events';
 import { ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { SqsQueue } from 'aws-cdk-lib/aws-events-targets';
 import { MonitoredQueue } from '@orcabus/platform-cdk-constructs/monitored-queue';
-import { FMANNOTATOR_QUEUE } from './constants';
 import { SlackAlerts } from '@orcabus/platform-cdk-constructs/shared-config/slack';
 
 /**
@@ -15,6 +14,10 @@ export interface FMAnnotatorConfig {
    * The name of the OrcaBus event bus.
    */
   eventBusName: string;
+  /**
+   * The name of the queue to redirect events to.
+   */
+  queueName: string;
 }
 
 /**
@@ -34,12 +37,12 @@ export class FMAnnotatorStatefulStack extends Stack {
     const alarmOldestMessage = Duration.days(2).toSeconds();
     this.monitoredQueue = new MonitoredQueue(this, 'MonitoredQueue', {
       queueProps: {
-        queueName: FMANNOTATOR_QUEUE,
+        queueName: props.queueName,
         removalPolicy: RemovalPolicy.RETAIN,
         alarmOldestMessageSeconds: alarmOldestMessage,
       },
       dlqProps: {
-        queueName: `${FMANNOTATOR_QUEUE}-dlq`,
+        queueName: `${props.queueName}-dlq`,
         removalPolicy: RemovalPolicy.RETAIN,
         retentionPeriod: Duration.days(14),
         alarmOldestMessageSeconds: alarmOldestMessage,
