@@ -81,6 +81,7 @@ export class FMAnnotatorStack extends Stack {
     const env = {
       FMANNOTATOR_FILE_MANAGER_ENDPOINT: `https://${props.fileManagerDomainPrefix}.${domain}`,
       FMANNOTATOR_FILE_MANAGER_SECRET_NAME: tokenSecret.secretName,
+      FMANNOTATOR_QUEUE_NAME: props.queueName,
       GO_LOG: 'debug',
     };
 
