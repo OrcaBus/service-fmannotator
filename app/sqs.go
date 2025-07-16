@@ -3,7 +3,6 @@ package fmannotator
 import (
 	"context"
 	"encoding/json"
-	"github.com/OrcaBus/service-fmannotator/app/schema/orcabus_workflowmanager/workflowrunstatechange"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 )
@@ -14,8 +13,8 @@ type Sqs struct {
 }
 
 // GetMessages uses the ReceiveMessage to get messages from an SQS queue.
-func (actor Sqs) GetMessages(ctx context.Context, queueUrl string) ([]workflowrunstatechange.Event, error) {
-	var messages []workflowrunstatechange.Event
+func (actor Sqs) GetMessages(ctx context.Context, queueUrl string) ([]Event, error) {
+	var messages []Event
 	result, err := actor.SqsClient.ReceiveMessage(ctx, &sqs.ReceiveMessageInput{
 		QueueUrl:            aws.String(queueUrl),
 		MaxNumberOfMessages: 10,
@@ -25,7 +24,7 @@ func (actor Sqs) GetMessages(ctx context.Context, queueUrl string) ([]workflowru
 	}
 
 	for _, message := range result.Messages {
-		var event workflowrunstatechange.Event
+		var event Event
 		err := json.Unmarshal([]byte(*message.Body), &event)
 		if err != nil {
 			return nil, err

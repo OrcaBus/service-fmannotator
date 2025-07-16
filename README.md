@@ -47,7 +47,7 @@ also deploys an event rule to the event bus to filter the correct events that th
 You can access CDK commands using the `pnpm` wrapper script.
 
 - **`cdk-stateless`**: Used to deploy the FMAnnotator `GoFunction` and event rules for the event bus.
-- **`cdk-stateful`**: Used to deploy the FMAnnotator dead-letter SQS queue for failed events.
+- **`cdk-stateful`**: Used to deploy the FMAnnotator queue and dead-letter SQS queue for failed events.
 
 The type of stack to deploy is determined by the context set in the `./bin/deploy.ts` file. This ensures the correct stack is executed based on the provided context.
 
@@ -100,7 +100,8 @@ The project is organized into the following directories:
     - **`./infrastructure/toolchain`**: Includes stacks for the stateless and stateful resources deployed in the toolchain account. These stacks primarily set up the CodePipeline for cross-environment deployments.
     - **`./infrastructure/stage`**: Defines the stage stacks for different environments:
         - **`./infrastructure/stage/config.ts`**: Contains environment-specific configuration files (e.g., `beta`, `gamma`, `prod`).
-        - **`./infrastructure/stage/fmannotator-stack.ts`**: The CDK stack entry point for provisioning resources required by the application in `./app`.
+        - **`./infrastructure/stage/fmannotator-stateless-stack.ts`**: The CDK stack entry point for provisioning stateless resources required by the application in `./app`.
+        - **`./infrastructure/stage/fmannotator-stateful-stack.ts`**: The CDK stack entry point for provisioning stateful resources required by the application in `./app`.
 
 - **`.github/workflows/pr-tests.yml`**: Configures GitHub Actions to run tests for `make check-all` (linting and code style), tests defined in `./test`, and `make test` for the `./app` directory.
 

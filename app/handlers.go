@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/OrcaBus/service-fmannotator/app/schema/orcabus_workflowmanager/workflowrunstatechange"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"log/slog"
@@ -14,7 +13,7 @@ import (
 )
 
 // PortalRunId Annotate the portalRunId from an incoming WorkflowRunStateChange event using the config and FM endpoint token.
-func PortalRunId(event workflowrunstatechange.Event, config *Config, token string) (err error) {
+func PortalRunId(event Event, config *Config, token string) (err error) {
 	eventStatus := strings.ToUpper(event.Detail.Status)
 	if eventStatus != "SUCCEEDED" && eventStatus != "FAILED" && eventStatus != "ABORTED" {
 		return nil

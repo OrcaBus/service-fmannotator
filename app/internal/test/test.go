@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/OrcaBus/service-fmannotator/app/schema/orcabus_workflowmanager/workflowrunstatechange"
 	"github.com/docker/go-connections/nat"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-testfixtures/testfixtures/v3"
@@ -88,15 +87,11 @@ func SetupFileManager(t *testing.T) *sql.DB {
 }
 
 // CreateEvent Create a mock test event.
-func CreateEvent(t *testing.T, path string) workflowrunstatechange.Event {
+func CreateEvent(t *testing.T, path string) []byte {
 	b, err := os.ReadFile(filepath.Join(fixturesPath(), path))
 	require.NoError(t, err)
 
-	var event workflowrunstatechange.Event
-	err = json.Unmarshal(b, &event)
-	require.NoError(t, err)
-
-	return event
+	return b
 }
 
 // QueryObjects Query the database objects.
