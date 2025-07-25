@@ -16,6 +16,7 @@ import (
 func PortalRunId(event Event, config *Config, token string) (err error) {
 	eventStatus := strings.ToUpper(event.Detail.Status)
 	if eventStatus != "SUCCEEDED" && eventStatus != "FAILED" && eventStatus != "ABORTED" {
+		slog.Debug(fmt.Sprintf("not running for event: %v", eventStatus))
 		return nil
 	}
 
