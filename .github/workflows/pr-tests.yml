@@ -60,7 +60,7 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v9
         with:
-          version: v2.1
+          version: v2.8
           working-directory: ./app
       - name: Lint and code formatting
         run: |
