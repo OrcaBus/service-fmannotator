@@ -11,6 +11,11 @@ export class StatefulStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const installCommands = [
+      'npm install --global corepack@latest',
+      'corepack enable',
+      'pnpm install --frozen-lockfile --ignore-scripts',
+    ];
     const deployment = new DeploymentStackPipeline(this, 'DeploymentPipeline', {
       githubBranch: 'main',
       githubRepo: 'service-fmannotator',
@@ -22,10 +27,13 @@ export class StatefulStack extends cdk.Stack {
         prod: getFmAnnotatorStatefulProps(),
       },
       pipelineName: 'OrcaBus-StatefulFMAnnotator',
-      cdkSynthCmd: ['pnpm install --frozen-lockfile --ignore-scripts', 'pnpm cdk-stateful synth'],
+      cdkSynthCmd: [...installCommands, 'pnpm cdk-stateful synth'],
       // No app tests for stateful stack.
       unitAppTestConfig: {
         command: [],
+      },
+      unitIacTestConfig: {
+        command: [...installCommands, 'pnpm test-stateful'],
       },
     });
 

@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "tsc && jest",
+    "test-stateless": "tsc && jest --testPathPatterns=test/stateless",
+    "test-stateful": "tsc && jest --testPathPatterns=test/stateful",
     "cdk": "cdk",
     "cdk-stateless": "cdk -c deployMode=stateless",
     "cdk-stateful": "cdk -c deployMode=stateful",

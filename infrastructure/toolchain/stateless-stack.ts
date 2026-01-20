@@ -21,6 +21,11 @@ export class StatelessStack extends cdk.Stack {
         },
       },
     };
+    const installCommands = [
+      'npm install --global corepack@latest',
+      'corepack enable',
+      'pnpm install --frozen-lockfile --ignore-scripts',
+    ];
     const deployment = new DeploymentStackPipeline(this, 'DeploymentPipeline', {
       githubBranch: 'main',
       githubRepo: 'service-fmannotator',
@@ -38,10 +43,14 @@ export class StatelessStack extends cdk.Stack {
         },
       },
       pipelineName: 'OrcaBus-StatelessFMAnnotator',
-      cdkSynthCmd: ['pnpm install --frozen-lockfile --ignore-scripts', 'pnpm cdk-stateless synth'],
+      cdkSynthCmd: [...installCommands, 'pnpm cdk-stateless synth'],
       synthBuildSpec: buildSpec,
       unitAppTestConfig: {
         command: ['cd app', 'make test'],
+        partialBuildSpec: buildSpec,
+      },
+      unitIacTestConfig: {
+        command: [...installCommands, 'pnpm test-stateless'],
         partialBuildSpec: buildSpec,
       },
     });
