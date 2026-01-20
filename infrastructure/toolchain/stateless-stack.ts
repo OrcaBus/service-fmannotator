@@ -11,6 +11,16 @@ export class StatelessStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const buildSpec = {
+      phases: {
+        install: {
+          'runtime-versions': {
+            nodejs: '22.x',
+            golang: '1.25',
+          },
+        },
+      },
+    };
     const deployment = new DeploymentStackPipeline(this, 'DeploymentPipeline', {
       githubBranch: 'main',
       githubRepo: 'service-fmannotator',
@@ -29,18 +39,10 @@ export class StatelessStack extends cdk.Stack {
       },
       pipelineName: 'OrcaBus-StatelessFMAnnotator',
       cdkSynthCmd: ['pnpm install --frozen-lockfile --ignore-scripts', 'pnpm cdk-stateless synth'],
-      synthBuildSpec: {
-        phases: {
-          install: {
-            'runtime-versions': {
-              nodejs: '22.x',
-              golang: '1.24',
-            },
-          },
-        },
-      },
+      synthBuildSpec: buildSpec,
       unitAppTestConfig: {
         command: ['cd app', 'make test'],
+        partialBuildSpec: buildSpec,
       },
     });
 
