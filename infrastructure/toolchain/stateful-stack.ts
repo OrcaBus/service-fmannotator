@@ -11,6 +11,18 @@ export class StatefulStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const buildSpec = {
+      phases: {
+        install: {
+          'runtime-versions': {
+            nodejs: '22.x',
+          },
+        },
+      },
+      cache: {
+        paths: ['node_modules/**/*'],
+      },
+    };
     const deployment = new DeploymentStackPipeline(this, 'DeploymentPipeline', {
       githubBranch: 'main',
       githubRepo: 'service-fmannotator',
@@ -22,13 +34,16 @@ export class StatefulStack extends cdk.Stack {
         prod: getFmAnnotatorStatefulProps(),
       },
       pipelineName: 'OrcaBus-StatefulFMAnnotator',
-      cdkSynthCmd: ['pnpm cdk-stateful synth'],
+      synthBuildSpec: buildSpec,
+      cdkSynthCmd: ['pnpm install', 'pnpm cdk-stateful synth'],
       // No app tests for stateful stack.
       unitAppTestConfig: {
         command: [],
+        partialBuildSpec: buildSpec,
       },
       unitIacTestConfig: {
         command: ['pnpm test --testPathPatterns=test/stateful'],
+        partialBuildSpec: buildSpec,
       },
       cacheOptions: {
         namespace: 'fmannotator',
