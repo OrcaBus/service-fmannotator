@@ -16,7 +16,7 @@ function applyStatelessNagSuppressions(stack: Stack) {
   );
 }
 
-describe('cdk-nag-stateless-toolchain-stack', () => {
+describe('cdk-nag-stateless-stage-stack', () => {
   const app = new App();
 
   const fmAnnotatorStack = new FMAnnotatorStack(app, 'FMAnnotatorStatelessStack', {

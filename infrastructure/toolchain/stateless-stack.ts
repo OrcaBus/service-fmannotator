@@ -21,13 +21,8 @@ export class StatelessStack extends cdk.Stack {
         },
       },
     };
-    const installCommands = [
-      'npm install --global corepack@latest',
-      'corepack enable',
-      'pnpm install --frozen-lockfile --ignore-scripts',
-    ];
     const deployment = new DeploymentStackPipeline(this, 'DeploymentPipeline', {
-      githubBranch: 'main',
+      githubBranch: 'feat/platform-dependencies',
       githubRepo: 'service-fmannotator',
       stack: FMAnnotatorStack,
       stackName: 'FMAnnotatorStack',
@@ -43,15 +38,18 @@ export class StatelessStack extends cdk.Stack {
         },
       },
       pipelineName: 'OrcaBus-StatelessFMAnnotator',
-      cdkSynthCmd: [...installCommands, 'pnpm cdk-stateless synth'],
+      cdkSynthCmd: ['pnpm cdk-stateless synth'],
       synthBuildSpec: buildSpec,
       unitAppTestConfig: {
         command: ['cd app', 'make test'],
         partialBuildSpec: buildSpec,
       },
       unitIacTestConfig: {
-        command: [...installCommands, 'pnpm test-stateless'],
+        command: ['pnpm test --testPathPatterns=test/stateless'],
         partialBuildSpec: buildSpec,
+      },
+      cacheOptions: {
+        namespace: 'fmannotator',
       },
     });
 

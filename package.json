@@ -5,8 +5,6 @@
   "main": "index.js",
   "scripts": {
     "test": "tsc && jest",
-    "test-stateless": "tsc && jest --testPathPatterns=test/stateless",
-    "test-stateful": "tsc && jest --testPathPatterns=test/stateful",
     "cdk": "cdk",
     "cdk-stateless": "cdk -c deployMode=stateless",
     "cdk-stateful": "cdk -c deployMode=stateful",
@@ -41,7 +39,7 @@
   },
   "dependencies": {
     "@aws-cdk/aws-lambda-go-alpha": "2.235.0-alpha.0",
-    "@orcabus/platform-cdk-constructs": "^1.0.4",
+    "@orcabus/platform-cdk-constructs": "1.0.7",
     "aws-cdk-lib": "^2.235.0",
     "constructs": "^10.4.5"
   }

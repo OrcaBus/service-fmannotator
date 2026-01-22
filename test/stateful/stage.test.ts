@@ -3,7 +3,7 @@ import { getFmAnnotatorStatefulProps } from '../../infrastructure/stage/config';
 import { FMAnnotatorStatefulStack } from '../../infrastructure/stage/fmannotator-stateful-stack';
 import { cdkNagStack } from '../util';
 
-describe('cdk-nag-stateless-toolchain-stack', () => {
+describe('cdk-nag-stateful-toolchain-stack', () => {
   const app = new App();
 
   const fmAnnotatorStack = new FMAnnotatorStatefulStack(app, 'FMAnnotatorStatefulStack', {
