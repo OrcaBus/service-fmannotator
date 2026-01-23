@@ -22,7 +22,7 @@ export class StatelessStack extends cdk.Stack {
       },
     };
     const deployment = new DeploymentStackPipeline(this, 'DeploymentPipeline', {
-      githubBranch: 'feat/platform-dependencies',
+      githubBranch: 'main',
       githubRepo: 'service-fmannotator',
       stack: FMAnnotatorStack,
       stackName: 'FMAnnotatorStack',
