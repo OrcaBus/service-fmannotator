@@ -20,9 +20,6 @@ export class StatelessStack extends cdk.Stack {
           },
         },
       },
-      cache: {
-        paths: ['node_modules/**/*'],
-      },
     };
     const deployment = new DeploymentStackPipeline(this, 'DeploymentPipeline', {
       githubBranch: 'feat/platform-dependencies',
@@ -41,7 +38,7 @@ export class StatelessStack extends cdk.Stack {
         },
       },
       pipelineName: 'OrcaBus-StatelessFMAnnotator',
-      cdkSynthCmd: ['pnpm install', 'pnpm cdk-stateless synth'],
+      cdkSynthCmd: ['pnpm cdk-stateless synth'],
       synthBuildSpec: buildSpec,
       unitAppTestConfig: {
         command: ['cd app', 'make test'],
@@ -53,6 +50,9 @@ export class StatelessStack extends cdk.Stack {
       },
       cacheOptions: {
         namespace: 'fmannotator',
+      },
+      driftCheckConfig: {
+        cdkCommand: 'pnpm cdk-stateless',
       },
     });
 
