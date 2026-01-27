@@ -33,9 +33,6 @@ export class StatefulStack extends cdk.Stack {
       cacheOptions: {
         namespace: 'fmannotator',
       },
-      driftCheckConfig: {
-        cdkCommand: 'pnpm cdk-stateful',
-      },
     });
 
     this.pipeline = deployment.pipeline;
