@@ -15,7 +15,7 @@ export class StatelessStack extends cdk.Stack {
       phases: {
         install: {
           'runtime-versions': {
-            nodejs: '22.x',
+            nodejs: '24.x',
             golang: '1.25',
           },
         },

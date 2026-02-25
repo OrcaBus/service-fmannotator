@@ -10,7 +10,7 @@ import {
 import { Construct } from 'constructs';
 import { GoFunction } from '@aws-cdk/aws-lambda-go-alpha';
 import path from 'path';
-import { Architecture } from 'aws-cdk-lib/aws-lambda';
+import { Architecture, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { ISecret, Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
 import { NamedLambdaRole } from '@orcabus/platform-cdk-constructs/named-lambda-role';
@@ -85,6 +85,7 @@ export class FMAnnotatorStack extends Stack {
       GO_LOG: 'debug',
     };
 
+    const runtime = Runtime.PROVIDED_AL2023;
     const appDir = path.join(__dirname, '..', '..', 'app');
     const fn = new GoFunction(this, 'PortalRunId', {
       entry: path.join(appDir, 'cmd', 'portalrunid'),
@@ -96,6 +97,7 @@ export class FMAnnotatorStack extends Stack {
       vpc: this.vpc,
       vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
       securityGroups: [this.securityGroup],
+      runtime,
     });
     fn.addEventSource(new SqsEventSource(this.queue));
 
@@ -109,6 +111,7 @@ export class FMAnnotatorStack extends Stack {
       vpc: this.vpc,
       vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
       securityGroups: [this.securityGroup],
+      runtime,
     });
   }
 
